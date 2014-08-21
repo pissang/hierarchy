@@ -1,0 +1,33 @@
+{
+    "nodes": [{
+        "name": "刘作虎",
+        "date": "2014/8/17",
+        "description": "一加科技创始人",
+        "industry": "企业家"
+    }, {
+        "name": "刘江峰",
+        "date": "2014/8/17",
+        "description": "",
+        "industry": "企业家"
+    }, {
+        "name": "周鸿祎",
+        "date": "2014/8/18",
+        "description": "奇虎360公司董事长",
+        "industry": "企业家"
+    }, {
+        "name": "罗永浩",
+        "date": "",
+        "description": "锤子科技创始人",
+        "industry": "企业家"
+    }],
+    "edges": [{
+        "source": "刘作虎",
+        "target": "罗永浩"
+    }, {
+        "source": "刘作虎",
+        "target": "刘江峰"
+    }, {
+        "source": "刘作虎",
+        "target": "周鸿祎"
+    }]
+}

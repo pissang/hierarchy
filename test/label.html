@@ -1,0 +1,38 @@
+<!Doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script type="text/javascript" src="../lib/esl.js"></script>
+        <title></title>
+    </head>
+    <body>
+        <div id="main" style="width: 500px; height:300px;"></div>
+        <script type="text/javascript">
+            require.config({
+                baseUrl: '../',
+                paths: {
+                    'glmatrix': '../../qtek/thirdparty/gl-matrix'
+                },
+                packages: [
+                    {
+                        name: 'zrender',
+                        location: '../../zrender/src',
+                        main: 'zrender'
+                    },
+                    {
+                        name: 'echarts',
+                        location: '../../echarts/src',
+                        main: 'echarts'
+                    },
+                    {
+                        name: 'qtek',
+                        location: '../../qtek/src',
+                        main: 'qtek.amd'
+                    }
+                ]
+            });
+            require(['test/label']);
+        </script>
+    </body>
+</html>

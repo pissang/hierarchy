@@ -1,0 +1,23 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+
+    background-image: url(../imgs/bg.jpg);
+    background-size: 100% auto;
+
+    overflow: hidden;
+}
+
+#main {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+}

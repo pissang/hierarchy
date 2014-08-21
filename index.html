@@ -1,0 +1,54 @@
+<!Doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script type="text/javascript" src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js"></script>
+        <title></title>
+        <link rel="stylesheet" href="css/index.css">
+    </head>
+    <body>
+        <canvas id="bg-particles"></canvas>
+        <canvas id="out-of-focus"></canvas>
+        <div id="main"></div>
+        <div id="logo"></div>
+        <div id="logo-kg"></div>
+        <a href="http://echarts.baidu.com" target='_blank' id="logo-echarts"></a>
+        <div id="browser-upgrade" style="display:none;">
+            <img src="imgs/browser-upgrade.jpg" alt="">
+            <p>
+                对不起你当前使用的浏览器无法浏览该页面
+                <br />百度建议你使用<a href="http://www.baidu.com/s?wd=chrome">chrome</a>，<a href="http://www.baidu.com/s?wd=firefox">firefox</a>，<a href="http://www.baidu.com/s?wd=IE10">IE10+</a>
+                <br />或<a href="http://www.baidu.com/s?ie=utf-8&wd=%E7%99%BE%E5%BA%A6%E6%B5%8F%E8%A7%88%E5%99%A8">百度浏览器</a>极速模式进行浏览
+            </p>
+        </div>
+        <script type="text/javascript" src="loading.js"></script>
+        <script type="text/javascript">
+            if (document.createElement('canvas').getContext) {
+                 //手持移动设备（不包括pad），TODO
+                if (typeof(screen) !== 'undefined' && screen.width < 480) {
+                    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=' + 1 / window.devicePixelRatio);   
+                }
+                // Support canvas
+                require.config({
+                    paths: {
+                        'js/index': 'release'
+                    }
+                });
+                require(['js/index'], function() {});
+            } else {
+                // 显示浏览器升级信息
+                window.stopLoading && window.stopLoading();
+
+                document.getElementById('browser-upgrade').style.display = 'block';
+                document.body.style.background = 'black';
+            }
+        </script>
+        <link rel="stylesheet" href="css/tip.css">
+        <script type="text/javascript">
+            var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+            document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F25c7f84f9aa99057e23e18158a5b1a9d' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script src="http://cdn.webglstats.com/stat.js" defer="defer" async="async"></script>
+    </body>
+</html>
