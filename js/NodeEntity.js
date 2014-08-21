@@ -65,7 +65,7 @@ define(function(require) {
             
             this.group = new Group();
 
-            var padding = 5;
+            var padding = 3;
             var labelMargin = 5;
 
             var cardWidth = this.imageWidth + padding * 2;
@@ -81,14 +81,20 @@ define(function(require) {
                     height: cardHeight,
                     arrowSize: [20, 10],
 
-                    shadowColor: 'black',
+                    shadowColor: '#888',
                     shadowOffsetX: 0,
-                    shadowOffsetY: 2,
+                    shadowOffsetY: 0,
                     shadowBlur: 5
                 },
                 clickable: this.clickable,
                 onclick: function() {
                     self.trigger('click');
+                },
+                onmouseover: function() {
+                    self.trigger('mouseover');
+                },
+                onmouseout: function() {
+                    self.trigger('mouseout');
                 },
                 highlightStyle: {
                     opacity: 0
@@ -109,6 +115,8 @@ define(function(require) {
             var labelGroup = new Group();
             var labelY = 0;
             var labelWidth = 0;
+
+            var labelColor = this.labelPosition === 'inside' ? 'white' : '#111';
             // Label list
             for (var i = 0; i < this.labelList.length; i++) {
                 var labelItem = this.labelList[i];
@@ -116,7 +124,7 @@ define(function(require) {
                     style: {
                         x: 0,
                         y: labelY,
-                        color: 'white',
+                        color: labelColor,
                         textFont: labelItem.font,
                         text: labelItem.text,
                         textBaseline: 'top'
@@ -171,13 +179,17 @@ define(function(require) {
         },
 
         highlight: function(zr) {
-            this._cardShape.style.color = this.highlightColor;
-            zr.modShape(this._cardShape);
+            // this._cardShape.style.color = this.highlightColor;
+            this._cardShape.style.shadowBlur = 20;
+            this._cardShape.style.shadowColor = this.color;
+            zr.modShape(this._cardShape.id);
         },
 
         lowlight: function(zr) {
-            this._cardShape.style.color = this.color;
-            zr.modShape(this._cardShape);
+            // this._cardShape.style.color = this.color;
+            this._cardShape.style.shadowBlur = 5;
+            this._cardShape.style.shadowColor = '#888';
+            zr.modShape(this._cardShape.id);
         }
     });
 

@@ -19,12 +19,12 @@ define(function(require, exports, module) {
     // Interface
     var hierarchy = {
 
-        start: function(graphData) {
+        start: function(graphData, mainNode) {
             graph = new Graph();
             zr = zrender.init(document.getElementById('main'));
             parallax = new Parallax('bg');
-
-            var mainNode = '刘作虎';
+            parallax.scaleBase = 0.05;
+            parallax.scaleStep = 1;
 
             for (var i = 0; i < graphData.nodes.length; i++) {
                 var n = graphData.nodes[i];
@@ -32,17 +32,18 @@ define(function(require, exports, module) {
 
                 var isMainNode = node.name === mainNode;
 
-                var description = '';
-                var len = node.description.length;
-                var idx = 0;
-                while (len > 8) {
-                    description += node.description.slice(idx, 8) + '\n';
-                    len -= 8;
-                    idx += 8;
-                }
-                description += node.description.slice(idx);
+                // var description = '';
+                // var len = node.short_title.length;
+                // var idx = 0;
+                // while (len > 8) {
+                //     description += node.short_title.slice(idx, 8) + '\n';
+                //     len -= 8;
+                //     idx += 8;
+                // }
+                // description += node.short_title.slice(idx);
+                var description = node.short_title;
 
-                var industry = industries[node.industry];
+                var industry = industries[node.profession_type];
                 if (industry) {
                     var color = industry.color
                 } else {
@@ -51,22 +52,23 @@ define(function(require, exports, module) {
 
                 var image = imageUrl.replace('{name}', node.name);
                 node.entity = new NodeEntity({
-                    image: node.image || image || 'imgs/sample-man.jpg',
-                    imageWidth: isMainNode ? 100 : 60,
-                    imageHeight: isMainNode ? 100 : 60,
+                    image: node.logo_image || image || 'imgs/sample-man.jpg',
+                    imageWidth: isMainNode ? 120 : 70,
+                    imageHeight: isMainNode ? 120 : 70,
                     color: color,
                     labelList: [{
                         text: node.name,
                         font: 'bold 14px 微软雅黑'
                     }, {
-                        text: node.description,
+                        text: description,
                         font: '12px 微软雅黑'
                     }, {
                         text: node.date,
-                        font: '12px 微软雅黑'
+                        font: '10px 微软雅黑'
                     }],
                     labelPosition: isMainNode ? 'inside' : 'outside'
                 });
+
             }
 
             for (var i = 0; i < graphData.edges.length; i++) {
@@ -86,7 +88,7 @@ define(function(require, exports, module) {
                 dagreGraph.addEdge(null, edge.source.name, edge.target.name);
             });
 
-            var layout = dagre.layout().rankSep(150).run(dagreGraph);
+            var layout = dagre.layout().rankSep(120).run(dagreGraph);
 
             layout.eachNode(function(name, layoutNode) {
                 var node = graph.getNodeByName(name);
@@ -105,11 +107,11 @@ define(function(require, exports, module) {
                             parent: node.entity.getOutPosition(),
                             children: [],
                             lineWidth: 2,
-                            strokeColor: 'grey',
+                            strokeColor: '#222',
                             lineJoin: 'round',
                             opacity: 0.6
                         },
-                        hoverable: true
+                        hoverable: false
                     });
                     node.treeShape = treeShape;
 
@@ -120,6 +122,19 @@ define(function(require, exports, module) {
 
                     zr.addShape(treeShape);
                 }
+
+                // 浮层
+                node.entity.on('click', function() {
+                    hierarchy.popup(node.name, node.entity.color);
+                });
+                node.entity.on('mouseover', function() {
+                    node.entity.highlight(zr);
+                    zr.refreshNextFrame();
+                });
+                node.entity.on('mouseout', function() {
+                    node.entity.lowlight(zr);
+                    zr.refreshNextFrame();
+                });
             });
 
             zr.modLayer(0, {
@@ -155,14 +170,15 @@ define(function(require, exports, module) {
                 }
 
                 // Parallax
-                parallax.scaleBase = 0.08;
                 parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
                 zrRefresh.apply(this, arguments);
             }
-
+            setTimeout(function() {
+                hierarchy.moveTo(mainNode);
+            }, 20)
         },
 
-        moveTo: function(name) {
+        moveTo: function(name, noAnim) {
             if (!zr) {
                 return;
             }
@@ -179,15 +195,29 @@ define(function(require, exports, module) {
 
             var newPos = vec2.sub([], target, pos);
 
-            zr.animation.animate(layer)
-                .when(800, {
-                    position: newPos
-                })
-                .during(function() {
-                    layer.dirty = true;
-                    zr.refresh();
-                })
-                .start('CubicInOut')
+            if (noAnim) {
+                layer.position = newPos;
+                layer.dirty = true;
+                zr.refresh();
+            } else {
+                zr.animation.animate(layer)
+                    .when(800, {
+                        position: newPos
+                    })
+                    .during(function() {
+                        parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
+                        layer.dirty = true;
+                        zr.refreshNextFrame();
+                    })
+                    .start('CubicInOut');
+            }
+
+            // Highlight
+            for (var i = 0; i < graph.nodes.length; i++) {
+                graph.nodes[i].entity.lowlight(zr);
+            }
+            node.entity.highlight(zr);
+            zr.refreshNextFrame();
         },
 
         moveLeft: function() {
@@ -222,12 +252,18 @@ define(function(require, exports, module) {
                 return;
             }
 
-        }
+        },
+
+        popup: function(name) {}
     }
 
     // setTimeout(function() {
     //     hierarchy.moveTo('王思聪');
     // }, 1000);
+    // 
+    window.onresize = function() {
+        zr.resize();
+    }
 
     return hierarchy;
 });

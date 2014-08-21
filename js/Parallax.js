@@ -1,10 +1,6 @@
 // Parallax
 define(function(require) {
 
-    function ParallaxLayer(dom, scale) {
-
-    }
-
     function Parallax(dom) {
         if (typeof(dom) === 'string') {
             dom = document.getElementById(dom)
@@ -17,6 +13,11 @@ define(function(require) {
                 bgLayers.push(current);
             }
             current = current.nextSibling;
+        }
+        for (var i = 0; i < bgLayers.length; i++) {
+            var bgLayer = bgLayers[i];
+            bgLayer._offsetX = bgLayer.clientWidth - dom.clientWidth;
+            bgLayer._offsetY = bgLayer.clientWidth - dom.clientWidth;
         }
         this._root = dom;
         this._bgLayers = bgLayers;
@@ -33,10 +34,17 @@ define(function(require) {
             var top = y * scale;
             scale *= this.scaleStep;
 
-            left = -Math.max(Math.min(-left, bgLayer.clientWidth - this._root.clientWidth), 0);
-            top = -Math.max(Math.min(-top, bgLayer.clientHeight - this._root.clientHeight), 0);
-            bgLayer.style.left = left + 'px';
-            bgLayer.style.top = top + 'px';
+            left = -Math.max(Math.min(-left, bgLayer._offsetX), 0);
+            top = -Math.max(Math.min(-top, bgLayer._offsetY), 0);
+
+            // PENDING
+            // Use translate3d to create layer
+            var transform = 'translate3d(' + Math.round(left) + 'px,' + Math.round(top) + 'px, 0px)';
+            bgLayer.style.WebkitTransform = transform;
+            bgLayer.style.MozTransform = transform;
+            bgLayer.style.transform = transform;
+            // bgLayer.style.left = left + 'px';
+            // bgLayer.style.top = top + 'px';
         }
     }
 

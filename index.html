@@ -3,16 +3,71 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script type="text/javascript" src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js"></script>
+        <script type="text/javascript" src="lib/esl.js"></script>
         <script type="text/javascript" src="lib/dagre.js"></script>
-        <title></title>
+        <title>ALS冰桶挑战赛 - 关系图谱</title>
+        
         <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="css/custom.css">
+
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link rel="stylesheet" type="text/css" href="css/elastislide.css" />
+        <script src="lib/modernizr.custom.17475.js"></script>
+        <script src="http://libs.baidu.com/jquery/1.8.3/jquery.min.js"></script>
+        <script src="lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="lib/jquerypp.custom.js"></script>
+        <script type="text/javascript" src="lib/jquery.elastislide.js"></script>
     </head>
     <body>
+        <div id="header">
+            <h1>ALS冰桶挑战赛 - 关系图谱</h1>
+        </div>
         <div id="bg">
             <div id="bg-0" class="bg-layer"></div>
+            <div id="bg-1" class="bg-layer"></div>
         </div>
         <div id="main"></div>
+        <!-- 弹窗 -->
+        <div id="modalDialog_kg_iceb" class="modal hide fade" 
+        style="background-color:rgb(32, 104, 199);width:700px;height:400px;padding:10px;"
+            tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div style="background-color:White;height:360px;margin:10px;">
+                <div>
+                    <button style="margin:5px;" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>       
+                </div>
+              <div class="modal-body" style="padding:25px;">
+                <div class="row-fluid">
+                  <div class="span6" >
+                    <a id="dialog_img_url0" href="#" target="_blank"><img id="dialog_img" src="http://pic7.qiyipic.com/common/20140821/4947cd8e67094336a9c7250383d3ce49.jpg"  
+                    style="width:255px;height:170px;border:solid 1px #ccc" /> </a>
+                    <a id="dialog_img_url1" href="#" target="_blank">
+                        <img src="imgs/play.png"  style="margin-top:-180px;margin-left:100px;"/>
+                    </a>
+                  </div>
+                  <div class="span6">
+                    <h1 id="dialog_name"></h1>
+                    <h5 id="dialog_title"></h5>
+                  </div>
+                </div>
+                <div id="dialog_description" style="margin-top:0px;line-height:1.62">   
+                </div>
+                <div class="text-right"><a id="dialog_more" href="#more" target="_blank">查看更多 >></a></div>
+              </div>  
+            </div>
+        </div>
+
+        <div class="footer active">
+            <div class="search">
+                <h3>人物搜索</h3>
+                <div class="ft-p1-input-holder">
+                    <input type="text" placeholder="输入挑战者姓名">
+                    <div id="search-btn"></div>
+                </div>
+            </div>
+            <div id="img-scroll-list"></div>
+            <div class="toggle-btn">Close</div>
+        </div>
+
         <script type="text/javascript">
              //手持移动设备（不包括pad），TODO
             if (typeof(screen) !== 'undefined' && screen.width < 480) {
@@ -31,12 +86,10 @@
             });
             require([
                 'js/index',
-                'data/hierarchy'
+                'data/icebucket'
             ], function (main, data) {
                 main.start(data);
             });
-        </script>
-        <script type="text/javascript">
         </script>
     </body>
 </html>
