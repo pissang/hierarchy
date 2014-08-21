@@ -8,10 +8,29 @@ body {
     width: 100%;
     margin: 0px;
 
+    overflow: hidden;
+}
+
+#bg {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+}
+
+#bg .bg-layer {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 1920px;
+    height: 1080px;
+}
+
+#bg-0 {
     background-image: url(../imgs/bg.jpg);
     background-size: 100% auto;
-
-    overflow: hidden;
 }
 
 #main {

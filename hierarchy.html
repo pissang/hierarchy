@@ -9,9 +9,17 @@
         <link rel="stylesheet" href="css/index.css">
     </head>
     <body>
+        <div id="bg">
+            <div id="bg-0" class="bg-layer"></div>
+        </div>
         <div id="main"></div>
         <script type="text/javascript">
             require.config({
+                config: {
+                    'js/hierarchy': {
+                        imageUrl: 'imgs/{name}_副本.jpg'
+                    }
+                },
                 paths: {
                     'glmatrix': '../../qtek/thirdparty/gl-matrix'
                 },
@@ -33,7 +41,12 @@
                     }
                 ]
             });
-            require(['js/hierarchy']);
+            require([
+                'js/index',
+                'data/hierarchy'
+            ], function (main, data) {
+                main.start(data);
+            });
         </script>
 
     </body>

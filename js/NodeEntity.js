@@ -171,11 +171,13 @@ define(function(require) {
         },
 
         highlight: function(zr) {
-
+            this._cardShape.style.color = this.highlightColor;
+            zr.modShape(this._cardShape);
         },
 
-        leaveHighlight: function(zr) {
-
+        lowlight: function(zr) {
+            this._cardShape.style.color = this.color;
+            zr.modShape(this._cardShape);
         }
     });
 

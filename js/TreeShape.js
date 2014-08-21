@@ -14,25 +14,28 @@ define(function(require) {
         type: 'card',
 
         buildPath: function(ctx, style) {
-            var midY = 0;
             var parent = style.parent;
             var children = style.children;
             var minX = Infinity;
             var maxX = -Infinity;
+            var midY = 0;
 
-            if (children.length == 1) {
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                midY += child[1];
+                var minX = Math.min(minX, child[0]);
+                var maxX = Math.max(maxX, child[0]);
+            }
+            midY /= children.length;
+            midY = (midY + parent[1]) / 2;
+
+            if (children.length === 1) {
+                var firstChild = children[0];
                 ctx.moveTo(parent[0], parent[1]);
-                ctx.lineTo(children[0][0], children[0][1]);
+                ctx.lineTo(parent[0], midY);
+                ctx.lineTo(firstChild[0], midY);
+                ctx.lineTo(firstChild[0], firstChild[1]);
             } else {
-                for (var i = 0; i < children.length; i++) {
-                    var child = children[i];
-                    midY += child[1];
-                    var minX = Math.min(minX, child[0]);
-                    var maxX = Math.max(maxX, child[0]);
-                }
-                midY /= children.length;
-                midY = (midY + parent[1]) / 2;
-
                 ctx.moveTo(parent[0], parent[1]);
                 ctx.lineTo(parent[0], midY);
 
