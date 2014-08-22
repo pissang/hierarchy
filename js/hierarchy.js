@@ -28,6 +28,9 @@ define(function(require, exports, module) {
 
             for (var i = 0; i < graphData.nodes.length; i++) {
                 var n = graphData.nodes[i];
+                if (!n) {
+                    continue;
+                }
                 var node = graph.addNode(n.name, n);
 
                 var isMainNode = node.name === mainNode;
@@ -73,6 +76,9 @@ define(function(require, exports, module) {
 
             for (var i = 0; i < graphData.edges.length; i++) {
                 var e = graphData.edges[i];
+                if (!e) {
+                    continue;
+                }
                 var edge = graph.addEdge(e.source, e.target);
             }
 
@@ -208,6 +214,9 @@ define(function(require, exports, module) {
                         parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
                         layer.dirty = true;
                         zr.refreshNextFrame();
+                    })
+                    .done(function() {
+                        zr.refresh();
                     })
                     .start('CubicInOut');
             }

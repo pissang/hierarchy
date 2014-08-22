@@ -77,14 +77,15 @@ body {
 }
 
 .footer {
-    position: fixed;
-    width: 100%;
+    position: absolute;
     left: 0;
+    right: 0px;
     bottom: 0;
     height: 10px;
 
     z-index: 100px;
-    background-color: rgba(3, 29, 76, 0.9);
+    background-image: url(../imgs/footer-bg.png);
+    background-repeat: repeat;
 
     -webkit-transition: height 0.5s ease-in-out;
     -moz-transition: height 0.5s ease-in-out;
@@ -140,7 +141,6 @@ body {
     background-image: url(../imgs/search.png);
     background-repeat: no-repeat;
     background-position: 10px 5px;
-    background-size: 20px 20px;
 
     cursor: pointer;
 }

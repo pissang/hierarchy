@@ -83,8 +83,8 @@
 
 .elastislide-carousel ul li a img {
 	display: block;
-	border: 2px solid white;
 	max-width: 100%;
+	margin: 1px;
 }
 
 /* Navigation Arrows */

@@ -1,5 +1,7 @@
 define(function(require) {
 
+    require('../lib/es5shim');
+
     if (typeof(console) !== 'undefined' && console.log) {
         console.log(require('text!./asciiLogo.txt'));
         console.log('\n\n\n%chttp://echarts.baidu.com', 'font-size:14px;');
