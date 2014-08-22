@@ -81,7 +81,7 @@ define(function(require) {
                     height: cardHeight,
                     arrowSize: [20, 10],
 
-                    shadowColor: '#888',
+                    shadowColor: '#333',
                     shadowOffsetX: 0,
                     shadowOffsetY: 0,
                     shadowBlur: 5
@@ -116,7 +116,8 @@ define(function(require) {
             var labelY = 0;
             var labelWidth = 0;
 
-            var labelColor = this.labelPosition === 'inside' ? 'white' : '#111';
+            // var labelColor = this.labelPosition === 'inside' ? 'white' : '#111';
+            var labelColor = 'white';
             // Label list
             for (var i = 0; i < this.labelList.length; i++) {
                 var labelItem = this.labelList[i];
@@ -188,7 +189,7 @@ define(function(require) {
         lowlight: function(zr) {
             // this._cardShape.style.color = this.color;
             this._cardShape.style.shadowBlur = 5;
-            this._cardShape.style.shadowColor = '#888';
+            this._cardShape.style.shadowColor = '#333';
             zr.modShape(this._cardShape.id);
         }
     });

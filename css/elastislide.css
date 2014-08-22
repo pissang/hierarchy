@@ -86,6 +86,7 @@
 .elastislide-carousel ul li a img {
 	display: block;
     width: 100%;
+    background-color: black;
 }
 
 /* Navigation Arrows */

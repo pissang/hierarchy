@@ -25,8 +25,8 @@ define(function(require, exports, module) {
             graph = new Graph();
             zr = zrender.init(document.getElementById('main'));
             parallax = new Parallax('bg');
-            parallax.scaleBase = 0.05;
-            parallax.scaleStep = 1;
+            parallax.scaleBase = 0.15;
+            parallax.scaleStep = 0.5;
 
             var industryCount = 0;
             for (var i = 0; i < graphData.nodes.length; i++) {
@@ -130,7 +130,7 @@ define(function(require, exports, module) {
                             parent: node.entity.getOutPosition(),
                             children: [],
                             lineWidth: 2,
-                            strokeColor: '#222',
+                            strokeColor: '#a9ecff',
                             lineJoin: 'round',
                             opacity: 0.6
                         },
@@ -270,7 +270,7 @@ define(function(require, exports, module) {
             hierarchy._moveToPos(newPos);
         },
 
-        moveBottom: function() {
+        moveDown: function() {
             if (!zr) {
                 return;
             }
@@ -281,11 +281,28 @@ define(function(require, exports, module) {
             hierarchy._moveToPos(newPos);
         },
 
+        zoomIn: function() {
+            if (!zr) {
+                return;
+            }
+            var layer = zr.painter.getLayer(0);
+            layer.__zoom = layer.__zoom || 1;
+            hierarchy._scaleToRatio(layer.__zoom * 1.5);
+        },
+
+        zoomOut: function() {
+            if (!zr) {
+                return;
+            }
+            var layer = zr.painter.getLayer(0);
+            layer.__zoom = layer.__zoom || 1;
+            hierarchy._scaleToRatio(layer.__zoom / 1.5);
+        },
+
         highlightIndustries: function(industries) {
             if (!zr) {
                 return;
             }
-
         },
 
         _moveToPos: function(newPos) {
@@ -296,6 +313,33 @@ define(function(require, exports, module) {
                 })
                 .during(function() {
                     parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
+                    layer.dirty = true;
+                    zr.refreshNextFrame();
+                })
+                .done(function() {
+                    zr.refresh();
+                })
+                .start('CubicInOut');
+        },
+
+        _scaleToRatio: function(zoom) {
+            var cx = zr.getWidth() / 2;
+            var cy = zr.getHeight() / 2;
+            var layer = zr.painter.getLayer(0);
+            layer.__zoom = layer.__zoom || 1;
+            var scale = zoom / layer.__zoom;
+            var newScale = layer.scale.slice();
+            var newPos = layer.position.slice();
+            newPos[0] -= (cx - newPos[0]) * (scale - 1);
+            newPos[1] -= (cy - newPos[1]) * (scale - 1);
+            newScale[0] *= scale;
+            newScale[1] *= scale;
+            zr.animation.animate(layer)
+                .when(800, {
+                    position: newPos,
+                    scale: newScale
+                })
+                .during(function() {
                     layer.dirty = true;
                     zr.refreshNextFrame();
                 })

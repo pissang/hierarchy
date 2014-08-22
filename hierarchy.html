@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script type="text/javascript" src="lib/esl.js"></script>
-        <title>ALS冰桶挑战赛 - 关系图谱</title>
+        <title>ALS冰桶挑战 - 关系图谱</title>
         
         <link rel="stylesheet" href="css/index.css">
         <link rel="stylesheet" href="css/custom.css">
@@ -14,22 +14,23 @@
     </head>
     <body>
         <div id="header">
-            <h1>ALS冰桶挑战赛 - 关系图谱</h1>
-            <div id="logo"></div>
+            <h1>ALS冰桶挑战 - 关系图谱</h1>
         </div>
         <div id="legends"></div>
         <div id="bg">
             <div id="bg-0" class="bg-layer"></div>
-            <div id="bg-1" class="bg-layer"></div>
         </div>
         <div id="main"></div>
         <div id="control">
             <div class="move">
                 <div id="arrow-left"></div>
                 <div id="arrow-right"></div>
-                <div id="arrow-top"></div>
-                <div id="arrow-bottom"></div>
+                <div id="arrow-up"></div>
+                <div id="arrow-down"></div>
             </div>
+            <div class="move-cover"></div>
+            <div id="zoom-in"></div>
+            <div id="zoom-out"></div>
         </div>
         <!-- 弹窗 -->
         <div id="modalDialog_kg_iceb" class="modal hide fade" 

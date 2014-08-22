@@ -24,7 +24,6 @@ body {
 
     overflow: hidden;
 
-    background-image: url(../imgs/bg0.png);
     background-size: 100% 100%;
 }
 
@@ -33,25 +32,17 @@ body {
     left: 0px;
     top: 0px;
     
-    width: 1600px;
-    height: 1000px;
+    width: 3000px;
+    height: 2000px;
 }
 
 #bg #bg-0 {
-    background-image: url(../imgs/ice.png);
-    background-repeat: repeat-x;
-    background-position: left bottom;
-
-    top: -100px;
+    background-image: url(../imgs/diamond.jpg);
 }
 
 
 #bg #bg-1 {
-    background-image: url(../imgs/water.png);
-    background-repeat: repeat-x;
-    background-position: left top;
-
-    top: -200px;
+    background-image: url(../imgs/bg-circle.png);
 }
 
 #main {
@@ -64,27 +55,27 @@ body {
 
 #header {
     width: 100%;
-    height: 40px;
+    height: 55px;
     position: absolute;
     top: 0px;
     z-index: 100;
-    background-color: #031d4c;
-    opacity: 0.9;
-    box-shadow: 0px 0px 5px #000;
+    background-image: url(../imgs/header-bg.png);
 }
 
 #header h1 {
-    color: white;
-    font-size: 18px;
-    margin: 5px 20px;
+    color: rgb(209, 226, 249);
+    font-size: 24px;
+    position: absolute;
+    top: 0px;
+    left: 30px;
     padding: 0px;
-    line-height: 30px;
+    line-height: 40px;
 }
 
 #legends {
     position: absolute;
-    top: 50px;
-    right: 20px;
+    top: 90px;
+    left: 40px;
     
     width: 100px;
 
@@ -97,7 +88,7 @@ body {
 }
 
 #legends .item {
-    float: left;
+    height: 20px;
     margin: 3px 2px;
     width: auto;
     line-height: 15px;
@@ -162,7 +153,7 @@ body {
     height: 34px;
     position: absolute;
     right: 50px;
-    top: -34px;
+    top: -33px;
     color: white;
 
     background-image: url(../imgs/toggle-button.png);
@@ -240,11 +231,10 @@ body {
 
 #img-scroll-list li .title {
     position: absolute;
-    /*bottom: -25px;*/
     left: 0px;
     right: 0px;
     height: 25px;
-    bottom: 0px;
+    bottom: -25px;
 
     background-color: black;
     color: white;
@@ -254,33 +244,49 @@ body {
 
     opacity: 0.7;
 
-    -webkit-transition: bottom 1.0s ease-in-out;
-    -moz-transition: bottom 1.0s ease-in-out;
-    transition: bottom 1.0s ease-in-out;
+    z-index: 1;
+
+    -webkit-transition: bottom 0.3s ease-out;
+    -moz-transition: bottom 0.3s ease-out;
+    transition: bottom 0.3s ease-out;
+}
+
+#img-scroll-list li:hover .title {
+    bottom: 0px;
 }
 
 #control {
     z-index: 10;
     position: absolute;
-    top: 50px;
-    left: 20px;
+    top: 70px;
+    right: 20px;
+
+    width: 102px;
+}
+
+#control .move-cover {
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 1;
+
+    cursor: pointer;
 }
 
 #control .move {
-    width: 100px;
-    height: 100px;
+    width: 102px;
+    height: 102px;
     position: relative;
+    background-image: url(../imgs/move-bg.png);
 }
 
 #control .move>div {
-    opacity: 0.7;
+    opacity: 0;
     cursor: pointer;
-
-    -webkit-transition: all 0.5s linear;
-    -moz-transition: all 0.5s linear;
-    transition: all 0.5s linear;
 }
-#control .move>div:hover {
+#control .move>div.active {
     opacity: 1.0;
 }
 
@@ -288,9 +294,9 @@ body {
     position: absolute;
     left: 0px;
     top: 50%;
-    margin-top: -19px;
-    height: 39px;
-    width: 28px;
+    margin-top: -37px;
+    height: 74px;
+    width: 53px;
     background-image: url(../imgs/move-left.png);
 }
 
@@ -298,30 +304,58 @@ body {
     position: absolute;
     right: 0px;
     top: 50%;
-    margin-top: -19px;
-    height: 39px;
-    width: 28px;
+    margin-top: -37px;
+    height: 74px;
+    width: 53px;
     background-image: url(../imgs/move-right.png);
 }
 
-#arrow-top {
+#arrow-up {
     position: absolute;
     top: 0px;
     left: 50%;
-    margin-left: -19px;
-    height: 28px;
-    width: 39px;
-    background-image: url(../imgs/move-top.png);
+    margin-left: -37px;
+    height: 53px;
+    width: 74px;
+    background-image: url(../imgs/move-up.png);
 }
 
-#arrow-bottom {
+#arrow-down {
     position: absolute;
     bottom: 0px;
     left: 50%;
-    margin-left: -19px;
-    height: 28px;
-    width: 39px;
-    background-image: url(../imgs/move-bottom.png);
+    margin-left: -37px;
+    height: 53px;
+    width: 74px;
+    background-image: url(../imgs/move-down.png);
+}
+
+#zoom-in {
+    background-image: url(../imgs/zoom-in.png);
+    width: 30px;
+    height: 30px;
+
+    top: 120px;
+    left: 0px;
+    position: absolute;
+    cursor: pointer;
+}
+#zoom-in:hover {
+    background-image: url(../imgs/zoom-in-hover.png);
+}
+
+#zoom-out {
+    background-image: url(../imgs/zoom-out.png);
+    width: 30px;
+    height: 30px;
+
+    top: 120px;
+    right: 0px;
+    position: absolute;
+    cursor: pointer;
+}
+#zoom-out:hover {
+    background-image: url(../imgs/zoom-out-hover.png);
 }
 
 #logo {
