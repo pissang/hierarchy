@@ -101,6 +101,14 @@ define(function(require) {
             };
             
             return style.__rect;
+        },
+                
+        isCover : function (x, y) {
+            var originPos = this.getTansform(x, y);
+            x = originPos[0];
+            y = originPos[1];
+            var rect = this.getRect(this.style);
+            return !(x < rect.x || y < rect.y || x > rect.x + rect.width || y > rect.y + rect.height);
         }
     }
 

@@ -124,7 +124,7 @@ define(function(require) {
                     style: {
                         x: 0,
                         y: labelY,
-                        color: labelColor,
+                        color: labelItem.color || labelColor,
                         textFont: labelItem.font,
                         text: labelItem.text,
                         textBaseline: 'top'

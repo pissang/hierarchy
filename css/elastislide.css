@@ -65,10 +65,11 @@
 .elastislide-carousel ul li {
 	margin: 0;
 	-webkit-backface-visibility: hidden;
+	margin: 1px;
+	position: relative;
 }
 
 .elastislide-horizontal ul li {
-	height: 100%;
 	display: inline-block;
 }
 
@@ -79,12 +80,12 @@
 .elastislide-carousel ul li a {
 	display: inline-block;
 	width: 100%;
+    height: 100%;
 }
 
 .elastislide-carousel ul li a img {
 	display: block;
-	max-width: 100%;
-	margin: 1px;
+    width: 100%;
 }
 
 /* Navigation Arrows */

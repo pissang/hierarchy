@@ -4,7 +4,6 @@ define(function(require, exports, module) {
     var NodeEntity = require('./NodeEntity');
     var TreeShape = require('./TreeShape');
     var Graph = require('./Graph');
-    var industries = require('../data/industries');
     var vec2 = require('zrender/tool/vector');
     var Parallax = require('./Parallax');
     
@@ -16,6 +15,9 @@ define(function(require, exports, module) {
     config = config || {};
     var imageUrl = config.imageUrl || '';
 
+    var industries = {};
+    var colorList = ['#2068C7', '#C26516', '#1DA364', '#BF20AF', '#7eb46e'];
+
     // Interface
     var hierarchy = {
 
@@ -26,6 +28,21 @@ define(function(require, exports, module) {
             parallax.scaleBase = 0.05;
             parallax.scaleStep = 1;
 
+            var industryCount = 0;
+            for (var i = 0; i < graphData.nodes.length; i++) {
+                var n = graphData.nodes[i];
+                if (n && n.profession_type) {
+                    var industry = industries[n.profession_type];
+                    if (!industry) {
+                        var color = colorList[industryCount];
+                        industries[n.profession_type] = {
+                            color: color,
+                            name: name
+                        };
+                        industryCount++;
+                    }
+                }
+            }
             for (var i = 0; i < graphData.nodes.length; i++) {
                 var n = graphData.nodes[i];
                 if (!n) {
@@ -35,43 +52,43 @@ define(function(require, exports, module) {
 
                 var isMainNode = node.name === mainNode;
 
-                // var description = '';
-                // var len = node.short_title.length;
-                // var idx = 0;
-                // while (len > 8) {
-                //     description += node.short_title.slice(idx, 8) + '\n';
-                //     len -= 8;
-                //     idx += 8;
-                // }
-                // description += node.short_title.slice(idx);
                 var description = node.short_title;
 
                 var industry = industries[node.profession_type];
                 if (industry) {
-                    var color = industry.color
+                    var color = industry.color;
                 } else {
-                    var color = '#2882F8'
+                    var color = '#2882F8';
                 }
 
                 var image = imageUrl.replace('{name}', node.name);
+
+                var labelList = [{
+                    text: node.name,
+                    font: 'bold 14px 微软雅黑'
+                }, {
+                    text: description,
+                    font: '12px 微软雅黑'
+                }, {
+                    text: node.ice_action_type,
+                    font: '10px 微软雅黑'
+                }];
+
+                if (node.reason) {
+                    labelList.splice(1, 0, {
+                        text: node.reason,
+                        font: 'bold 10px 微软雅黑'
+                    });
+                }
+
                 node.entity = new NodeEntity({
                     image: node.logo_image || image || 'imgs/sample-man.jpg',
                     imageWidth: isMainNode ? 120 : 70,
                     imageHeight: isMainNode ? 120 : 70,
                     color: color,
-                    labelList: [{
-                        text: node.name,
-                        font: 'bold 14px 微软雅黑'
-                    }, {
-                        text: description,
-                        font: '12px 微软雅黑'
-                    }, {
-                        text: node.date,
-                        font: '10px 微软雅黑'
-                    }],
+                    labelList: labelList,
                     labelPosition: isMainNode ? 'inside' : 'outside'
                 });
-
             }
 
             for (var i = 0; i < graphData.edges.length; i++) {
@@ -154,10 +171,11 @@ define(function(require, exports, module) {
             var zrRefresh = zr.painter.refresh;
 
             zr.painter.refresh = function() {
+                var layer = zr.painter.getLayer(0);
+
                 // Culling
                 var width = zr.getWidth();
                 var height = zr.getHeight();
-                var layer = zr.painter.getLayer(0);
                 var min = [0, 0];
                 var max = [0, 0];
                 for (var i = 0; i < graph.nodes.length; i++) {
@@ -177,6 +195,7 @@ define(function(require, exports, module) {
 
                 // Parallax
                 parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
+
                 zrRefresh.apply(this, arguments);
             }
             setTimeout(function() {
@@ -195,9 +214,10 @@ define(function(require, exports, module) {
                 return;
             }
 
-            var pos = node.entity.group.position;
+            var pos = node.entity.group.position.slice();
+            pos[1] += node.entity.rect.height;
             pos = vec2.mul([], pos, layer.scale);
-            var target = [zr.getWidth() / 2, 50];
+            var target = [zr.getWidth() / 2, zr.getHeight() / 2];
 
             var newPos = vec2.sub([], target, pos);
 
@@ -206,19 +226,7 @@ define(function(require, exports, module) {
                 layer.dirty = true;
                 zr.refresh();
             } else {
-                zr.animation.animate(layer)
-                    .when(800, {
-                        position: newPos
-                    })
-                    .during(function() {
-                        parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
-                        layer.dirty = true;
-                        zr.refreshNextFrame();
-                    })
-                    .done(function() {
-                        zr.refresh();
-                    })
-                    .start('CubicInOut');
+                hierarchy._moveToPos(newPos);
             }
 
             // Highlight
@@ -233,27 +241,44 @@ define(function(require, exports, module) {
             if (!zr) {
                 return;
             }
+            var layer = zr.painter.getLayer(0);
+            var newPos = layer.position.slice();
+            newPos[0] += zr.getWidth() * 0.6;
+
+            hierarchy._moveToPos(newPos);
         },
 
         moveRight: function() {
             if (!zr) {
                 return;
             }
+            var layer = zr.painter.getLayer(0);
+            var newPos = layer.position.slice();
+            newPos[0] -= zr.getWidth() * 0.6;
 
+            hierarchy._moveToPos(newPos);
         },
 
         moveTop: function() {
             if (!zr) {
                 return;
             }
+            var layer = zr.painter.getLayer(0);
+            var newPos = layer.position.slice();
+            newPos[1] += zr.getHeight() * 0.3;
 
+            hierarchy._moveToPos(newPos);
         },
 
         moveBottom: function() {
             if (!zr) {
                 return;
             }
+            var layer = zr.painter.getLayer(0);
+            var newPos = layer.position.slice();
+            newPos[1] -= zr.getHeight() * 0.3;
 
+            hierarchy._moveToPos(newPos);
         },
 
         highlightIndustries: function(industries) {
@@ -263,7 +288,26 @@ define(function(require, exports, module) {
 
         },
 
-        popup: function(name) {}
+        _moveToPos: function(newPos) {
+            var layer = zr.painter.getLayer(0);
+            zr.animation.animate(layer)
+                .when(800, {
+                    position: newPos
+                })
+                .during(function() {
+                    parallax.moveTo(layer.position[0] / layer.scale[0], layer.position[1] / layer.scale[1]);
+                    layer.dirty = true;
+                    zr.refreshNextFrame();
+                })
+                .done(function() {
+                    zr.refresh();
+                })
+                .start('CubicInOut');
+        },
+
+        popup: function(name) {},
+
+        legends: industries
     }
 
     // setTimeout(function() {

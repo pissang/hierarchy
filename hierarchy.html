@@ -15,12 +15,22 @@
     <body>
         <div id="header">
             <h1>ALS冰桶挑战赛 - 关系图谱</h1>
+            <div id="logo"></div>
         </div>
+        <div id="legends"></div>
         <div id="bg">
             <div id="bg-0" class="bg-layer"></div>
             <div id="bg-1" class="bg-layer"></div>
         </div>
         <div id="main"></div>
+        <div id="control">
+            <div class="move">
+                <div id="arrow-left"></div>
+                <div id="arrow-right"></div>
+                <div id="arrow-top"></div>
+                <div id="arrow-bottom"></div>
+            </div>
+        </div>
         <!-- 弹窗 -->
         <div id="modalDialog_kg_iceb" class="modal hide fade" 
         style="background-color:rgb(32, 104, 199);width:700px;height:400px;padding:10px;"
@@ -31,7 +41,7 @@
                 </div>
               <div class="modal-body" style="padding:25px;">
                 <div class="row-fluid">
-                  <div class="span6" >
+                  <div class="span6" id="dialog_video_tumb">
                     <a id="dialog_img_url0" href="#" target="_blank"><img id="dialog_img" src="http://pic7.qiyipic.com/common/20140821/4947cd8e67094336a9c7250383d3ce49.jpg"  
                     style="width:255px;height:170px;border:solid 1px #ccc" /> </a>
                     <a id="dialog_img_url1" href="#" target="_blank">
@@ -45,7 +55,7 @@
                 </div>
                 <div id="dialog_description" style="margin-top:0px;line-height:1.62">   
                 </div>
-                <div class="text-right"><a id="dialog_more" href="#more" target="_blank">查看更多 >></a></div>
+                <div class="text-right"><a id="dialog_more" href="#more" target="_blank">查看百科介绍 >></a></div>
               </div>  
             </div>
         </div>
@@ -59,7 +69,7 @@
                 </div>
             </div>
             <div id="img-scroll-list"></div>
-            <div class="toggle-btn">Close</div>
+            <div class="toggle-btn">隐 藏</div>
         </div>
     
         <script type="text/javascript" src="lib/dagre.js"></script>

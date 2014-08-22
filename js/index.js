@@ -31,7 +31,12 @@ define(function(require) {
         var li_list = [];
         for(var i in users){
             var u = users[i];
-            li_list.push('<li><a href="javascript:;"><img src="'+ u.logo_image +'" alt="'+ u.name +'" /></a></li>');
+            li_list.push('<li>\
+                <a href="javascript:;">\
+                    <img src="'+ u.logo_image +'" alt="'+ u.name +'" />\
+                    <span class="title">' + u.name + '</span>\
+                </a>\
+            </li>');
         }
         li_list.push('<li><a href="#"></a></li>');
 
@@ -68,16 +73,39 @@ define(function(require) {
         var u = loadUserData(usrName);   
         if (u) {
             $("#dialog_name").html(u.name);
-            $("#dialog_title").html(u.long_title);
-            $("#dialog_img_url0").attr("href",u.video_url);
-            $("#dialog_img_url1").attr("href",u.video_url);
-            $("#dialog_more").attr("href",u.baike_url);
-            //$("#dialog_img").attr("",u.photo);
-            $("#dialog_description").html(u.description.substring(0,200));
+            $("#dialog_title").html(u.long_title || '');
+            if (u.description.length > 200) {
+                var description = u.description.substring(0, 200) + '…';
+            } else {
+                var description = u.description;
+            }
+            $("#dialog_description").html(description);
 
             $("#modalDialog_kg_iceb").css("background-color", color);
             
-            $("#dialog_img_url0 img").attr("src",u.video_image);
+            // Reset
+            $("#dialog_img_url0 img").attr("src", '');
+            $("#dialog_img_url0").attr("href", '#');
+            $("#dialog_img_url0").attr("target", '_self');
+            $("#dialog_img_url1").hide();
+            $("#dialog_video_tumb").hide();
+            if (u.video_image) {
+                $("#dialog_img_url0 img").attr("src", u.video_image);
+                $('#dialog_video_tumb').show();
+                
+                if (u.video_url) {
+                    $("#dialog_img_url0").attr("href",u.video_url);
+                    $("#dialog_img_url0").attr("target", '_blank');
+                    $("#dialog_img_url1").attr("href",u.video_url);
+                    $("#dialog_img_url1").show();
+                }
+            }
+
+            if (u.baike_url) {
+                $("#dialog_more").attr("href",u.baike_url).show();
+            } else {
+                $("#dialog_more").hide();
+            }
             //调用弹窗
             $('#modalDialog_kg_iceb').modal({
                 keyboard: true
@@ -92,9 +120,37 @@ define(function(require) {
 
             searchUser('');
 
-            hierarchy.start(_data, "李彦宏");
+            var referName = document.referrer;
+            var result = referName.match(/s?wd=(.+?)&/);
+            if (!result) {
+                result = referName.match(/s?wd=(.+?)$/);
+            }
+            var mainNode = '冰桶挑战';
+            if (result) {
+                for (var i = 0; i < data.nodes.length; i++) {
+                    if (!data.nodes[i]) {
+                        continue;
+                    }
+                    if (data.nodes[i].name === result[1]) {
+                        mainNode = result[1];
+                    }
+                }
+            }
+
+            hierarchy.start(_data, mainNode);
 
             hierarchy.popup = popup;
+
+            for (var name in hierarchy.legends) {
+                var legend = hierarchy.legends[name];
+
+                $("#legends").append('\
+                    <div class="item">\
+                        <label class="color" style="background-color:' + legend.color + '"></label>\
+                        <label class="name">' + name + '</label>\
+                    </div>\
+                ')
+            }
 
             // Search
             var timeout;
@@ -118,11 +174,24 @@ define(function(require) {
                 $footer = $('.footer');
                 $footer.toggleClass('active');
                 if ($footer.hasClass('active')) {
-                    $(this).html('Close');
+                    $(this).html('隐 藏');
                 } else {
-                    $(this).html('Open');
+                    $(this).html('显 示');
                 }
-            })
+            });
+
+            $('#arrow-right').click(function() {
+                hierarchy.moveRight();
+            });
+            $('#arrow-left').click(function() {
+                hierarchy.moveLeft();
+            });
+            $('#arrow-top').click(function() {
+                hierarchy.moveTop();
+            });
+            $('#arrow-bottom').click(function() {
+                hierarchy.moveBottom();
+            });
         }
     }
 });
