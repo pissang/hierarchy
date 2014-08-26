@@ -24,9 +24,9 @@ define(function(require) {
         if(query.replace(/(^\s*)|(\s*$)/g, "") == ""){
             users = data.nodes;
         }else{
-            for(var i in data.nodes){
+            for(var i = 0; i < data.nodes.length; i++){
                 var u = data.nodes[i];
-                if(u.name.toLowerCase().indexOf(query.toLowerCase())>=0){
+                if(u && u.name.toLowerCase().indexOf(query.toLowerCase())>=0){
                     users.push(u);
                 }
             }
@@ -39,7 +39,7 @@ define(function(require) {
         }
         //生成img list
         var li_list = [];
-        for(var i in users){
+        for(var i = 0; i < users.length; i++){
             var u = users[i];
             li_list.push('<li>\
                 <a href="javascript:;">\
@@ -61,7 +61,6 @@ define(function(require) {
             speed: 0.5,
             easing: 'ease-out'
         });
-
     }
 
     //人物精确匹配
@@ -94,7 +93,7 @@ define(function(require) {
             }
             $("#dialog_description").html(description);
 
-            $("#modalDialog_kg_iceb").css("background-color", color);
+            $("#modalDialog_kg_iceb .modal-background").css("background-color", color);
             
             // Reset
             $("#dialog_img_url0 img").attr("src", '');
@@ -130,23 +129,40 @@ define(function(require) {
         start: function(_data) {
             
             data = _data;
+            for (var i = 0; i < data.nodes.length;) {
+                var n = data.nodes[i];
+                if (!n || !n.name) { // Invalid data
+                    data.nodes.splice(i, 1);
+                } else {
+                    i++;
+                }
+            }
+            for (var i = 0; i < data.edges.length;) {
+                var n = data.edges[i];
+                if (!n) { // Invalid data
+                    data.edges.splice(i, 1);
+                } else {
+                    i++;
+                }
+            }
 
             searchUser('');
-
-            var referName = document.referrer;
-            var result = referName.match(/s?wd=(.+?)&/);
+            var result = document.referrer.match(/s?wd=(.+?)&/);
             if (!result) {
-                result = referName.match(/s?wd=(.+?)$/);
+                result = document.referrer.match(/s?wd=(.+?)$/);
             }
             var mainNode = '冰桶挑战';
             if (result) {
-                result[1] = decodeURIComponent(result[1]);
+                var queryName = decodeURIComponent(result[1]);
+                var matchOffset = Infinity;
                 for (var i = 0; i < data.nodes.length; i++) {
                     if (!data.nodes[i]) {
                         continue;
                     }
-                    if (data.nodes[i].name === result[1]) {
-                        mainNode = result[1];
+                    var offset = queryName.indexOf(data.nodes[i].name);
+                    if (offset < matchOffset && offset >= 0) {
+                        mainNode = data.nodes[i].name;
+                        matchOffset = offset;
                     }
                 }
             }
@@ -176,25 +192,34 @@ define(function(require) {
                 var $this = $(this);
                 setTimeout(function() {
                     if ($this.val() !== prevVal) {
-                        searchUser($this.val())
+                        searchUser($this.val());
                         prevVal = $this.val();
+                        log('zhishituputonglansearch', prevVal);
                     }
                 }, 100);
             });
             $("#img-scroll-list").delegate("li","click", function(){
                 var name = $(this).find('img').attr('alt');
                 
-                log('zhishitupumoveto', name);
+                log('zhishituputonglanmoveto', name);
 
                 hierarchy.moveTo(name);
+            });
+            $('#img-scroll-list').delegate('.elastislide-next', 'click', function() {
+                log('zhishituputonglannext', '');
+            });
+            $('#img-scroll-list').delegate('.elastislide-prev', 'click', function() {
+                log('zhishituputonglanprev', '');
             });
 
             $('.footer .toggle-btn').bind('click', function() {
                 $footer = $('.footer');
                 $footer.toggleClass('active');
                 if ($footer.hasClass('active')) {
+                    log('zhishituputonglanshow');
                     $(this).html('隐 藏');
                 } else {
+                    log('zhishituputonglanhide');
                     $(this).html('显 示');
                 }
             });
@@ -249,24 +274,30 @@ define(function(require) {
 
                 switch(getDirection(x, y)) {
                     case 'arrow-left':
+                        log('zhishitupumoveleft', 'virtualpad');
                         hierarchy.moveLeft();
                         break;
                     case 'arrow-right':
+                        log('zhishitupumoveright', 'virtualpad');
                         hierarchy.moveRight();
                         break;
                     case 'arrow-up':
+                        log('zhishitupumoveup', 'virtualpad');
                         hierarchy.moveTop();
                         break;
                     case 'arrow-down':
+                        log('zhishitupumovedown', 'virtualpad');
                         hierarchy.moveDown();
                         break;
                 }
             };
 
             $("#zoom-in").click(function() {
+                log('zhishitupuzoomin', 'virtualpad');
                 hierarchy.zoomIn();
             });
             $("#zoom-out").click(function() {
+                log('zhishitupuzoomout', 'virtualpad');
                 hierarchy.zoomOut();
             });
 
@@ -274,21 +305,29 @@ define(function(require) {
                 switch(e.keyCode) {
                     case 87: //w
                     case 38: //up arrow
+                        log('zhishitupumovetop', 'keyboard');
                         hierarchy.moveTop();
                         break;
                     case 83: //s
                     case 40: //down arrow
+                        log('zhishitupumovedown', 'keyboard');
                         hierarchy.moveDown();
                         break;
                     case 65: //a
                     case 37: //left arrow
+                        log('zhishitupumoveleft', 'keyboard');
                         hierarchy.moveLeft();
                         break;
                     case 68: //d
                     case 39: //right arrow
+                        log('zhishitupumoveright', 'keyboard');
                         hierarchy.moveRight();
                         break; 
                 }
+            });
+
+            $('#dialog_more').click(function() {
+                log('zhishitupubaike', $('#dialog_name').html());
             });
         }
     }

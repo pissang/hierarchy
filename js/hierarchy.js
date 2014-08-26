@@ -4,19 +4,24 @@ define(function(require, exports, module) {
     var NodeEntity = require('./NodeEntity');
     var TreeShape = require('./TreeShape');
     var Graph = require('./Graph');
+    var Animation = require('zrender/animation/Animation');
     var vec2 = require('zrender/tool/vector');
     var Parallax = require('./Parallax');
     
     var graph;
     var zr;
     var parallax;
+    var animation;
+    var dagreGraph;
 
     var config = module.config();
     config = config || {};
     var imageUrl = config.imageUrl || '';
 
     var industries = {};
-    var colorList = ['#2068C7', '#C26516', '#1DA364', '#BF20AF', '#7eb46e'];
+    var colorList = ['#7f5ce1', '#952492', '#c93558', '#4ba310', '#dc7c0b'];
+
+    var isIE8 = document.createElement('canvas').getContext;
 
     // Interface
     var hierarchy = {
@@ -27,6 +32,8 @@ define(function(require, exports, module) {
             parallax = new Parallax('bg');
             parallax.scaleBase = 0.15;
             parallax.scaleStep = 0.5;
+            animation = new Animation();
+            animation.start();
 
             var industryCount = 0;
             for (var i = 0; i < graphData.nodes.length; i++) {
@@ -51,14 +58,13 @@ define(function(require, exports, module) {
                 var node = graph.addNode(n.name, n);
 
                 var isMainNode = node.name === mainNode;
-
-                var description = node.short_title;
+                node.isMain = isMainNode;
 
                 var industry = industries[node.profession_type];
                 if (industry) {
                     var color = industry.color;
                 } else {
-                    var color = '#2882F8';
+                    var color = '#0fb8c3';
                 }
 
                 var image = imageUrl.replace('{name}', node.name);
@@ -66,18 +72,23 @@ define(function(require, exports, module) {
                 var labelList = [{
                     text: node.name,
                     font: 'bold 14px 微软雅黑'
-                }, {
-                    text: description,
-                    font: '12px 微软雅黑'
-                }, {
-                    text: node.ice_action_type,
-                    font: '10px 微软雅黑'
                 }];
-
                 if (node.reason) {
-                    labelList.splice(1, 0, {
+                    labelList.push({
                         text: node.reason,
                         font: 'bold 10px 微软雅黑'
+                    });
+                }
+                if (node.short_title) {
+                    labelList.push({
+                        text: node.short_title,
+                        font: '12px 微软雅黑'
+                    });
+                }
+                if (node.ice_action_type) {
+                    labelList.push({
+                        text: node.ice_action_type,
+                        font: '10px 微软雅黑'
                     });
                 }
 
@@ -100,7 +111,7 @@ define(function(require, exports, module) {
             }
 
             // Layouting
-            var dagreGraph = new dagre.Digraph();
+            dagreGraph = new dagre.Digraph();
             graph.eachNode(function(node) {
                 dagreGraph.addNode(node.name, {
                     width: node.entity.rect.width,
@@ -111,12 +122,28 @@ define(function(require, exports, module) {
                 dagreGraph.addEdge(null, edge.source.name, edge.target.name);
             });
 
-            var layout = dagre.layout().rankSep(120).run(dagreGraph);
+            var layout = dagre.layout().rankSep(120).nodeSep(10).edgeSep(100).run(dagreGraph);
 
             layout.eachNode(function(name, layoutNode) {
                 var node = graph.getNodeByName(name);
                 node.entity.group.position[0] = layoutNode.x;
                 node.entity.group.position[1] = layoutNode.y;
+                
+                // Debug rectangle
+                var RectangleShape = require('zrender/shape/Rectangle');
+                var rect = new RectangleShape({
+                    style: {
+                        x: layoutNode.x,
+                        y: layoutNode.y,
+                        width: layoutNode.width,
+                        height: layoutNode.height,
+                        brushType: 'stroke',
+                        strokeColor: 'red',
+                        lineWidth: 2
+                    },
+                    hoverable: false
+                });
+                zr.addShape(rect);
             });
 
             // Draw
@@ -134,6 +161,7 @@ define(function(require, exports, module) {
                             lineJoin: 'round',
                             opacity: 0.6
                         },
+                        z: -1,
                         hoverable: false
                     });
                     node.treeShape = treeShape;
@@ -147,17 +175,19 @@ define(function(require, exports, module) {
                 }
 
                 // 浮层
-                node.entity.on('click', function() {
-                    hierarchy.popup(node.name, node.entity.color);
-                });
-                node.entity.on('mouseover', function() {
-                    node.entity.highlight(zr);
-                    zr.refreshNextFrame();
-                });
-                node.entity.on('mouseout', function() {
-                    node.entity.lowlight(zr);
-                    zr.refreshNextFrame();
-                });
+                if (isIE8) {
+                    node.entity.on('click', function() {
+                        hierarchy.popup(node.name, node.entity.color);
+                    });
+                    node.entity.on('mouseover', function() {
+                        node.entity.highlight(zr);
+                        zr.refreshNextFrame();
+                    });
+                    node.entity.on('mouseout', function() {
+                        node.entity.lowlight(zr);
+                        zr.refreshNextFrame();
+                    });
+                }
             });
 
             zr.modLayer(0, {
@@ -181,6 +211,8 @@ define(function(require, exports, module) {
                 for (var i = 0; i < graph.nodes.length; i++) {
                     var card = graph.nodes[i].entity;
                     var treeShape = graph.nodes[i].treeShape;
+
+                    // Culling card
                     min[0] = card.rect.x + card.group.position[0];
                     min[1] = card.rect.y + card.group.position[1];
                     max[0] = card.rect.width + min[0];
@@ -191,6 +223,26 @@ define(function(require, exports, module) {
                     }
                     var ignore = min[0] > width || min[1] > height || max[0] < 0 || max[1] < 0;
                     graph.nodes[i].entity.group.ignore = ignore;
+
+                    // Layzing loading image
+                    if (!ignore && !card.isImageLoad()) {
+                        // card.loadImage(zr);
+                    }
+
+                    // Culling tree shape
+                    if (treeShape) {
+                        var rect = treeShape.getRect(treeShape.style);
+                        min[0] = rect.x;
+                        min[1] = rect.y;
+                        max[0] = rect.width + min[0];
+                        max[1] = rect.height + min[1];
+                        if (layer.transform) {
+                            vec2.applyTransform(min, min, layer.transform);
+                            vec2.applyTransform(max, max, layer.transform);
+                        }
+                        var ignore = min[0] > width || min[1] > height || max[0] < 0 || max[1] < 0;
+                        treeShape.ignore = ignore;
+                    }
                 }
 
                 // Parallax
@@ -200,7 +252,7 @@ define(function(require, exports, module) {
             }
             setTimeout(function() {
                 hierarchy.moveTo(mainNode);
-            }, 20)
+            }, 20);
         },
 
         moveTo: function(name, noAnim) {
@@ -226,14 +278,29 @@ define(function(require, exports, module) {
                 layer.dirty = true;
                 zr.refresh();
             } else {
-                hierarchy._moveToPos(newPos);
+                hierarchy._moveToPos(newPos, function() {
+                    if (node.isMain) {
+                        return
+                    }
+                    var scaleObj = {
+                        scale: node.entity.getScale()
+                    };
+                    animation.animate(scaleObj)
+                        .when(500, {
+                            scale: 1.3
+                        })
+                        .during(function() {
+                            node.entity.setScale(zr, scaleObj.scale);
+                            zr.refresh();
+                        })
+                        .start('BounceOut');
+                });
             }
 
             // Highlight
             for (var i = 0; i < graph.nodes.length; i++) {
-                graph.nodes[i].entity.lowlight(zr);
+                graph.nodes[i].entity.setScale(zr, 1);
             }
-            node.entity.highlight(zr);
             zr.refreshNextFrame();
         },
 
@@ -305,9 +372,11 @@ define(function(require, exports, module) {
             }
         },
 
-        _moveToPos: function(newPos) {
+        _moveToPos: function(newPos, cb) {
             var layer = zr.painter.getLayer(0);
-            zr.animation.animate(layer)
+            var self = this;
+            animation.clear();
+            animation.animate(layer)
                 .when(800, {
                     position: newPos
                 })
@@ -318,23 +387,33 @@ define(function(require, exports, module) {
                 })
                 .done(function() {
                     zr.refresh();
+                    if (layer.__zoom && layer.__zoom !== 1) {
+                        self._scaleToRatio(1, cb);
+                    } else {
+                        cb && cb();
+                    }
                 })
                 .start('CubicInOut');
         },
 
-        _scaleToRatio: function(zoom) {
+        _scaleToRatio: function(zoom, cb) {
             var cx = zr.getWidth() / 2;
             var cy = zr.getHeight() / 2;
             var layer = zr.painter.getLayer(0);
             layer.__zoom = layer.__zoom || 1;
-            var scale = zoom / layer.__zoom;
+            var zoomScale = zoom / layer.__zoom;
+
             var newScale = layer.scale.slice();
             var newPos = layer.position.slice();
-            newPos[0] -= (cx - newPos[0]) * (scale - 1);
-            newPos[1] -= (cy - newPos[1]) * (scale - 1);
-            newScale[0] *= scale;
-            newScale[1] *= scale;
-            zr.animation.animate(layer)
+            newPos[0] -= (cx - newPos[0]) * (zoomScale - 1);
+            newPos[1] -= (cy - newPos[1]) * (zoomScale - 1);
+            newScale[0] *= zoomScale;
+            newScale[1] *= zoomScale;
+
+            layer.__zoom = zoom;
+
+            animation.clear();
+            animation.animate(layer)
                 .when(800, {
                     position: newPos,
                     scale: newScale
@@ -345,6 +424,7 @@ define(function(require, exports, module) {
                 })
                 .done(function() {
                     zr.refresh();
+                    cb && cb();
                 })
                 .start('CubicInOut');
         },

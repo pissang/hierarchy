@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script type="text/javascript" src="lib/esl.js"></script>
+        <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js"></script>
         <script type="text/javascript" src="lib/dagre.js"></script>
         <title>ALS冰桶挑战 - 知识图谱</title>
         
@@ -15,16 +15,13 @@
     </head>
     <body>
         <div id="header">
-            <div class='header-left'></div>
-            <h1>ALS冰桶挑战 - 知识图谱</h1>
-            <div class="header-right"></div>
+            <h1>ALS冰桶挑战 - 关系图谱</h1>
         </div>
         <div id="legends"></div>
         <div id="bg">
             <div id="bg-0" class="bg-layer"></div>
         </div>
         <div id="main"></div>
-
         <div id="control">
             <div class="move">
                 <div id="arrow-left"></div>
@@ -37,17 +34,17 @@
             <div id="zoom-out"></div>
         </div>
         <!-- 弹窗 -->
-        <div id="modalDialog_kg_iceb" class="modal hide fade" 
-        style="background-color:rgb(32, 104, 199);width:700px;height:400px;padding:10px;"
+        <div id="modalDialog_kg_iceb" class="modal hide fade" style="width:700px;height:400px;padding:10px;"
             tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
-            <div style="background-color:White;height:360px;margin:10px;">
+            <div class="modal-background"></div>
+            <div style="height:360px;color:white;">
                 <div>
-                    <button style="margin:5px;" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>       
+                    <a style="margin:5px;font-size:64px;color:white;" class="close" data-dismiss="modal" aria-hidden="true">×</a>       
                 </div>
               <div class="modal-body" style="padding:25px;">
                 <div class="row-fluid">
-                  <div class="span6" >
-                    <a id="dialog_img_url0" href="#" target="_blank"><img id="dialog_img" src=""  
+                  <div class="span6" id="dialog_video_tumb">
+                    <a id="dialog_img_url0" href="#" target="_blank"><img id="dialog_img" src="http://pic7.qiyipic.com/common/20140821/4947cd8e67094336a9c7250383d3ce49.jpg"  
                     style="width:255px;height:170px;border:solid 1px #ccc" /> </a>
                     <a id="dialog_img_url1" href="#" target="_blank">
                         <img src="imgs/play.png"  style="margin-top:-180px;margin-left:100px;"/>
@@ -76,7 +73,7 @@
             <div id="img-scroll-list"></div>
             <div class="toggle-btn">隐 藏</div>
         </div>
-
+        
         <script src="lib/modernizr.custom.17475.js"></script>
         <script src="http://libs.baidu.com/jquery/1.8.3/jquery.min.js"></script>
         <script src="lib/bootstrap.min.js"></script>

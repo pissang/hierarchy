@@ -8,16 +8,10 @@ define(function(require) {
     var TextShape = require('zrender/shape/Text');
     var ImageShape = require('zrender/shape/Image');
 
-    function CircleStyle(option) {
-        option = option || {};
-        for (var name in option) {
-            this[name] = option[name];
-        }
-    }
-    CircleStyle.prototype.x = 0;
-    CircleStyle.prototype.y = 0;
-    CircleStyle.prototype.r = 50;
-
+    var loadingImage = new Image();
+    loadingImage.src = 'imgs/logo_loading.png';
+    var defaultImage = new Image();
+    defaultImage.src = 'imgs/default_logo.jpg';
 
     var NodeEntity = Base.derive({
         
@@ -41,7 +35,11 @@ define(function(require) {
 
         clickable: true,
 
+        _isImageLoad: false,
+
         _cardShape: null,
+
+        _imageShape: null,
 
         _depth: 0,
 
@@ -101,13 +99,13 @@ define(function(require) {
                 }
             });
 
-            var image = new ImageShape({
+            var imageShape = new ImageShape({
                 style: {
                     x: padding,
                     y: padding,
                     width: this.imageWidth,
                     height: this.imageHeight,
-                    image: this.image
+                    image: loadingImage
                 },
                 hoverable: false
             });
@@ -130,7 +128,8 @@ define(function(require) {
                         text: labelItem.text,
                         textBaseline: 'top'
                     },
-                    hoverable: false
+                    hoverable: false,
+                    z: 1
                 });
                 var rect = textShape.getRect(textShape.style);
                 labelY += rect.height + labelMargin;
@@ -148,10 +147,11 @@ define(function(require) {
             }
 
             this.group.addChild(cardShape);
-            this.group.addChild(image);
+            this.group.addChild(imageShape);
             this.group.addChild(labelGroup);
 
             this._cardShape = cardShape;
+            this._imageShape = imageShape;
 
             // Update bounding rect
             if (this.labelPosition === 'inside') {
@@ -182,7 +182,7 @@ define(function(require) {
         highlight: function(zr) {
             // this._cardShape.style.color = this.highlightColor;
             this._cardShape.style.shadowBlur = 20;
-            this._cardShape.style.shadowColor = this.color;
+            this._cardShape.style.shadowColor = 'white';
             zr.modShape(this._cardShape.id);
         },
 
@@ -191,6 +191,43 @@ define(function(require) {
             this._cardShape.style.shadowBlur = 5;
             this._cardShape.style.shadowColor = '#333';
             zr.modShape(this._cardShape.id);
+        },
+
+        isImageLoad: function() {
+            return this._isImageLoad;
+        },
+
+        loadImage: function(zr) {
+            var self = this;
+            var image = new Image();
+            image.onload = function() {
+                image.onload = image.oerror = null;
+                self._imageShape.style.image = image;
+                zr.refreshNextFrame();
+            }
+            image.onerror = function() {
+                image.onload = image.onerror = null;
+                self._imageShape.style.image = defaultImage;
+                zr.refreshNextFrame();
+            }
+            image.src = this.image;
+            this._isImageLoad = true;
+            zr.modShape(this._imageShape);
+        },
+
+        setScale: function(zr, scale) {
+            this._scale = scale;
+            this._cardShape.style.shadowBlur = 5 * Math.pow(scale, 4);
+            this.group.scale[0] = scale;
+            this.group.scale[1] = scale;
+            this.group.scale[2] = this._cardShape.style.width / 2;
+            this.group.scale[3] = this._cardShape.style.height / 2;
+
+            zr.modGroup(this.group.id);
+        },
+
+        getScale: function() {
+            return this._scale;
         }
     });
 

@@ -26,7 +26,7 @@
 }
 
 .elastislide-wrapper.elastislide-loading {
-	background-image: url(../images/loading.gif);
+	background-image: url(../imgs/loading.gif);
 	background-repeat: no-repeat;
 	background-position: center center;
 }
