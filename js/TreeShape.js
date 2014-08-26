@@ -9,6 +9,10 @@ define(function(require) {
         ShapeBase.call(this, options);
     }
 
+    function xSortFunc(a, b) {
+        return a[0] - b[0];
+    }
+
     TreeShape.prototype = {
 
         type: 'card',
@@ -19,6 +23,8 @@ define(function(require) {
             var minX = Infinity;
             var maxX = -Infinity;
             var midY = 0;
+
+            // children.sort(xSortFunc);
 
             for (var i = 0; i < children.length; i++) {
                 var child = children[i];

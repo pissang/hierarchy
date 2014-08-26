@@ -7,12 +7,13 @@ define(function(require, exports, module) {
     var Animation = require('zrender/animation/Animation');
     var vec2 = require('zrender/tool/vector');
     var Parallax = require('./Parallax');
+    var Tree = require('./Tree');
+    var TreeLayout = require('./TreeLayout');
     
     var graph;
     var zr;
     var parallax;
     var animation;
-    var dagreGraph;
 
     var config = module.config();
     config = config || {};
@@ -110,40 +111,20 @@ define(function(require, exports, module) {
                 var edge = graph.addEdge(e.source, e.target);
             }
 
+            var tree = Tree.fromGraph(graph)[0];
+            tree.traverse(function(node) {
+                node.width = node.data.entity.rect.width;
+                node.height = node.data.entity.rect.height;
+            });
             // Layouting
-            dagreGraph = new dagre.Digraph();
-            graph.eachNode(function(node) {
-                dagreGraph.addNode(node.name, {
-                    width: node.entity.rect.width,
-                    height: node.entity.rect.height
-                });
-            });
-            graph.eachEdge(function(edge) {
-                dagreGraph.addEdge(null, edge.source.name, edge.target.name);
-            });
 
-            var layout = dagre.layout().rankSep(120).nodeSep(10).edgeSep(100).run(dagreGraph);
+            window.layout = new TreeLayout(tree);
+            layout.run();
 
-            layout.eachNode(function(name, layoutNode) {
-                var node = graph.getNodeByName(name);
-                node.entity.group.position[0] = layoutNode.x;
-                node.entity.group.position[1] = layoutNode.y;
-                
-                // Debug rectangle
-                var RectangleShape = require('zrender/shape/Rectangle');
-                var rect = new RectangleShape({
-                    style: {
-                        x: layoutNode.x,
-                        y: layoutNode.y,
-                        width: layoutNode.width,
-                        height: layoutNode.height,
-                        brushType: 'stroke',
-                        strokeColor: 'red',
-                        lineWidth: 2
-                    },
-                    hoverable: false
-                });
-                zr.addShape(rect);
+            layout.tree.traverse(function(treeNode) {
+                var node = treeNode.data;
+                node.entity.group.position[0] = treeNode.x;
+                node.entity.group.position[1] = treeNode.y;
             });
 
             // Draw
@@ -226,7 +207,7 @@ define(function(require, exports, module) {
 
                     // Layzing loading image
                     if (!ignore && !card.isImageLoad()) {
-                        // card.loadImage(zr);
+                        card.loadImage(zr);
                     }
 
                     // Culling tree shape
