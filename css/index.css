@@ -200,13 +200,6 @@ body {
     line-height: 30px;
 }
 
-.elastislide-carousel ul li {
-    width: 90px;
-    height: 90px;
-
-    border-radius: 5px;
-    overflow: hidden;
-}
 #img-scroll-list .elastislide-carousel {
     height: 90px;
 }
@@ -254,6 +247,20 @@ body {
     -webkit-transition: bottom 0.3s ease-out;
     -moz-transition: bottom 0.3s ease-out;
     transition: bottom 0.3s ease-out;
+}
+
+#img-scroll-list li{
+    width: 90px;
+    height: 90px;
+
+    border-radius: 5px;
+    overflow: hidden;
+
+    box-sizing: border-box;
+}
+
+#img-scroll-list li.active {
+    border: 2px solid #0c8eff;
 }
 
 #img-scroll-list li:hover .title {

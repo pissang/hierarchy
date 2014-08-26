@@ -246,6 +246,7 @@ define(function(require, exports, module) {
             if (!node) {
                 return;
             }
+            var self = this;
 
             var pos = node.entity.group.position.slice();
             pos[1] += node.entity.rect.height;
@@ -263,18 +264,25 @@ define(function(require, exports, module) {
                     if (node.isMain) {
                         return
                     }
-                    var scaleObj = {
-                        scale: node.entity.getScale()
-                    };
-                    animation.animate(scaleObj)
-                        .when(500, {
-                            scale: 1.3
-                        })
-                        .during(function() {
-                            node.entity.setScale(zr, scaleObj.scale);
-                            zr.refresh();
-                        })
-                        .start('BounceOut');
+                    function cb() {
+                        var scaleObj = {
+                            scale: node.entity.getScale()
+                        };
+                        animation.animate(scaleObj)
+                            .when(500, {
+                                scale: 1.3
+                            })
+                            .during(function() {
+                                node.entity.setScale(zr, scaleObj.scale);
+                                zr.refresh();
+                            })
+                            .start('BounceOut');
+                    }
+                    if (layer.__zoom && layer.__zoom !== 1) {
+                        self._scaleToRatio(1, cb);
+                    } else {
+                        cb && cb();
+                    }
                 });
             }
 
@@ -368,11 +376,7 @@ define(function(require, exports, module) {
                 })
                 .done(function() {
                     zr.refresh();
-                    if (layer.__zoom && layer.__zoom !== 1) {
-                        self._scaleToRatio(1, cb);
-                    } else {
-                        cb && cb();
-                    }
+                    cb && cb();
                 })
                 .start('CubicInOut');
         },
@@ -391,13 +395,12 @@ define(function(require, exports, module) {
             newScale[0] *= zoomScale;
             newScale[1] *= zoomScale;
 
-            layer.__zoom = zoom;
-
             animation.clear();
             animation.animate(layer)
                 .when(800, {
                     position: newPos,
-                    scale: newScale
+                    scale: newScale,
+                    __zoom: zoom
                 })
                 .during(function() {
                     layer.dirty = true;

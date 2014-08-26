@@ -43,7 +43,7 @@ define(function(require) {
             var u = users[i];
             li_list.push('<li>\
                 <a href="javascript:;">\
-                    <img src="'+ u.logo_image +'" alt="'+ u.name +'" />\
+                    <img data-src="'+ u.logo_image +'" alt="'+ u.name +'" />\
                 </a>\
                 <span class="title">' + u.name + '</span>\
             </li>');
@@ -201,6 +201,9 @@ define(function(require) {
             $("#img-scroll-list").delegate("li","click", function(){
                 var name = $(this).find('img').attr('alt');
                 
+                $('#img-scroll-list li').removeClass('active');
+                $(this).addClass('active');
+
                 log('zhishituputonglanmoveto', name);
 
                 hierarchy.moveTo(name);
