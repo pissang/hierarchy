@@ -113,8 +113,8 @@ define(function(require, exports, module) {
 
             var tree = Tree.fromGraph(graph)[0];
             tree.traverse(function(node) {
-                node.width = node.data.entity.rect.width;
-                node.height = node.data.entity.rect.height;
+                node.layout.width = node.data.entity.rect.width;
+                node.layout.height = node.data.entity.rect.height;
             });
             // Layouting
 
@@ -123,8 +123,8 @@ define(function(require, exports, module) {
 
             layout.tree.traverse(function(treeNode) {
                 var node = treeNode.data;
-                node.entity.group.position[0] = treeNode.x;
-                node.entity.group.position[1] = treeNode.y;
+                node.entity.group.position[0] = treeNode.layout.x;
+                node.entity.group.position[1] = treeNode.layout.y;
             });
 
             // Draw
@@ -248,7 +248,7 @@ define(function(require, exports, module) {
             }
             var self = this;
 
-            var pos = node.entity.group.position.slice();
+            var pos = Array.prototype.slice.call(node.entity.group.position);
             pos[1] += node.entity.rect.height;
             pos = vec2.mul([], pos, layer.scale);
             var target = [zr.getWidth() / 2, zr.getHeight() / 2];
@@ -298,7 +298,7 @@ define(function(require, exports, module) {
                 return;
             }
             var layer = zr.painter.getLayer(0);
-            var newPos = layer.position.slice();
+            var newPos = Array.prototype.slice.call(layer.position);
             newPos[0] += zr.getWidth() * 0.6;
 
             hierarchy._moveToPos(newPos);
@@ -309,7 +309,7 @@ define(function(require, exports, module) {
                 return;
             }
             var layer = zr.painter.getLayer(0);
-            var newPos = layer.position.slice();
+            var newPos = Array.prototype.slice.call(layer.position);
             newPos[0] -= zr.getWidth() * 0.6;
 
             hierarchy._moveToPos(newPos);
@@ -320,7 +320,7 @@ define(function(require, exports, module) {
                 return;
             }
             var layer = zr.painter.getLayer(0);
-            var newPos = layer.position.slice();
+            var newPos = Array.prototype.slice.call(layer.position);
             newPos[1] += zr.getHeight() * 0.3;
 
             hierarchy._moveToPos(newPos);
@@ -331,7 +331,7 @@ define(function(require, exports, module) {
                 return;
             }
             var layer = zr.painter.getLayer(0);
-            var newPos = layer.position.slice();
+            var newPos = Array.prototype.slice.call(layer.position);
             newPos[1] -= zr.getHeight() * 0.3;
 
             hierarchy._moveToPos(newPos);
@@ -388,8 +388,8 @@ define(function(require, exports, module) {
             layer.__zoom = layer.__zoom || 1;
             var zoomScale = zoom / layer.__zoom;
 
-            var newScale = layer.scale.slice();
-            var newPos = layer.position.slice();
+            var newScale = Array.prototype.slice.call(layer.scale);
+            var newPos = Array.prototype.slice.call(layer.position);
             newPos[0] -= (cx - newPos[0]) * (zoomScale - 1);
             newPos[1] -= (cy - newPos[1]) * (zoomScale - 1);
             newScale[0] *= zoomScale;

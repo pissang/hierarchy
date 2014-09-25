@@ -3,8 +3,11 @@ define(function(Tree) {
     function TreeNode(name) {
         this.name = name;
         this.level = 0;
-        this.depth = 0;
+        this.height = 0;
         this.children = [];
+
+        this.data = {};
+        this.layout = {};
     }
 
     TreeNode.prototype.traverse = function(cb) {
@@ -16,16 +19,16 @@ define(function(Tree) {
     }
 
     TreeNode.prototype.update = function(level) {
-        var depth = 0;
+        var height = 0;
         this.level = level;
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
             child.update(level + 1);
-            if (child.depth > depth) {
-                depth = child.depth;
+            if (child.height > height) {
+                height = child.height;
             }
         }
-        this.depth = depth + 1;
+        this.height = height + 1;
     }
 
     TreeNode.prototype.find = function(name) {
@@ -84,9 +87,9 @@ define(function(Tree) {
                 treeNode = new TreeNode(node.name);
             }
 
-            treeNode.width = node.width || 0;
-            treeNode.height = node.height || 0;
             treeNode.data = node;
+            treeNode.layout.width = node.width;
+            treeNode.layout.height = node.height;
 
             treeNodesMap[node.name] = treeNode;
         }
